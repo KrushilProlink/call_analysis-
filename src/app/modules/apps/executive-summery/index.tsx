@@ -12,7 +12,7 @@ const ExecutiveSummeryPageWrapper = () => {
           path="details"
           element={
             <>
-              <PageTitle>Executive Summary</PageTitle>
+              <PageTitle>Summary & Training</PageTitle>
               <ExecutiveSummeryPage />
             </>
           }

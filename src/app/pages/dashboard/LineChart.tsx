@@ -68,7 +68,7 @@ const LineChart: React.FC<LineChartProps> = ({
     },
     grid: {
       row: {
-        colors: ["#f3f3f3", "transparent"], // takes an array which will be repeated on columns
+        colors: ["#f3f3f3", "transparent"],
         opacity: 0.5,
       },
     },
@@ -108,17 +108,30 @@ const LineChart: React.FC<LineChartProps> = ({
             </span>
           </div>
         </div>
-
-        <div id="chart">
-          <ReactApexChart
-            options={options}
-            series={series}
-            type="line"
-            height={350}
-          />
-        </div>
+        {!isLoading ? (
+          <div id="chart">
+            <ReactApexChart
+              options={options}
+              series={series}
+              type="line"
+              height={350}
+            />
+          </div>
+        ) : (
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              flexDirection: "column",
+              alignItems: "center",
+              padding: "160px 0",
+            }}
+          >
+            <span className="spinner-border text-primary" role="status"></span>
+            <span className="text-muted fs-6 fw-semibold mt-5">Loading...</span>
+          </div>
+        )}
         <div id="html-dist"></div>
-        {/* end::Chart */}
       </div>
     </div>
   );

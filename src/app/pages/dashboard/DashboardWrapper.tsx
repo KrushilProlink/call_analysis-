@@ -157,8 +157,8 @@ const DashboardWrapper = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const dispatch = useDispatch();
   const today = new Date();
-  const sevenDaypre = new Date(today);
-  sevenDaypre.setDate(sevenDaypre.getDate() - 1);
+  const preDay = new Date(today);
+  preDay.setDate(preDay.getDate() - 1);
 
   const storedDateRange = useSelector(
     (state: any) => state?.apwAnalysisDetails?.dateRange
@@ -168,7 +168,7 @@ const DashboardWrapper = () => {
   );
   const [teamName, setTeamName] = useState(storedTeamName || "");
 
-  const initialDateRange = storedDateRange || [sevenDaypre, sevenDaypre];
+  const initialDateRange = storedDateRange || [preDay, preDay];
   const [dateRange, setDateRangeState] = useState(initialDateRange);
 
   const handleSelect = (range: any) => {
