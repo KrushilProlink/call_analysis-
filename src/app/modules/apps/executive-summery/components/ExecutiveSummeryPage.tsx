@@ -48,7 +48,11 @@ const ExecutiveSummeryPage: FC = () => {
   const [value, setValue] = useState(0);
   const [requestedDate, setRequestedDate] = useState("");
 
-  const handleClose = () => setShow(false);
+  const handleClose = () => {
+    setShow(false);
+    setRequestedDate("");
+    setFile([]);
+  };
   const handleShow = () => setShow(true);
   const storedDateRange = useSelector(
     (state: any) => state?.apwAnalysisDetails?.dateRange
@@ -192,11 +196,38 @@ const ExecutiveSummeryPage: FC = () => {
     }, 500);
   };
 
-  const handleUploadFile = () => {
-    const payload = {
-      file: file[0],
-      requested_date: requestedDate,
-    };
+  const handleUploadFile = async (event: any) => {
+    event.preventDefault();
+    if (file?.length === 0) {
+      alert("Please select a file first!");
+      return;
+    }
+    if (requestedDate === "") {
+      alert("Please select Date");
+      return;
+    }
+
+    const formatedDate =
+      requestedDate && moment(requestedDate).format("DD-MM-YYYY");
+    const formData = new FormData();
+    formData.append("file", file[0]);
+    formData.append("requested_date", formatedDate);
+
+    try {
+      const response = await axios.post(`${API_URL}/excel-analysis`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      if (response?.status === 200) {
+        setFile([]);
+        setRequestedDate("");
+        handleClose();
+      }
+      console.log("File uploaded successfully:", response.data);
+    } catch (error) {
+      console.error("Error uploading file:", error);
+    }
   };
 
   useEffect(() => {
@@ -488,9 +519,8 @@ const ExecutiveSummeryPage: FC = () => {
             <div>
               <Button
                 variant="primary"
-                onClick={() => {
-                  handleClose();
-                  handleUploadFile();
+                onClick={(e) => {
+                  handleUploadFile(e);
                 }}
               >
                 Save
