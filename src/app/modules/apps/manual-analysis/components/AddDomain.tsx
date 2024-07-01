@@ -136,6 +136,16 @@ const AddDomain: FC = () => {
                           height={"70px"}
                           style={{ marginBottom: "29px" }}
                         />
+                        <Typography
+                          style={{
+                            color: "#10253F",
+                            fontSize: "14px",
+                            opacity: "50%",
+                          }}
+                          className="interFont"
+                        >
+                          Supported audio and txt File
+                        </Typography>
 
                         <Typography
                           style={{ fontWeight: "bold", fontSize: "18px" }}
@@ -171,6 +181,17 @@ const AddDomain: FC = () => {
                           >
                             Select File
                           </Button>
+                          <Typography
+                            style={{
+                              color: "#10253F",
+                              fontSize: "14px",
+                              opacity: "50%",
+                              marginTop: "10px",
+                            }}
+                            className="interFont"
+                          >
+                            File size upto 5 MB
+                          </Typography>
                         </div>
                       </div>
                     </>

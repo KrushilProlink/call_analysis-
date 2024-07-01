@@ -2,6 +2,7 @@ import { Route, Routes, Outlet, Navigate } from "react-router-dom";
 import { PageLink, PageTitle } from "../../../../_metronic/layout/core";
 import { ManualAnalysis } from "./components/ManualAnalysis";
 import { AddDomain } from "./components/AddDomain";
+import { ManualAnalysisPage } from "./ManualAnalysisPage";
 
 const ManualAnalysisWrapper = () => {
   return (
@@ -11,16 +12,16 @@ const ManualAnalysisWrapper = () => {
           path="details"
           element={
             <>
-              <PageTitle>Manual Analysis</PageTitle>
-              <ManualAnalysis />
+              <PageTitle>Analysis</PageTitle>
+              <ManualAnalysisPage />
             </>
           }
         />
         <Route
-          path="details/addDomain"
+          path="details/uploadFile"
           element={
             <>
-              <PageTitle>Upload Domain</PageTitle>
+              <PageTitle>Upload</PageTitle>
               <AddDomain />
             </>
           }

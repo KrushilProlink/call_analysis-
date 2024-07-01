@@ -1,5 +1,4 @@
 import {
-  Button,
   FormControl,
   Grid,
   IconButton,
@@ -9,237 +8,278 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import axios from "axios";
-import { useFormik } from "formik";
+import { useFormik, FieldArray, Field, FormikProvider } from "formik";
 import React, { FC, useState } from "react";
-import { useDropzone } from "react-dropzone";
 import { MdAddCircleOutline, MdRemoveCircleOutline } from "react-icons/md";
-import audioImage from "../../../../../_metronic/assets/images/audio-file.png";
 import { KTCard, KTIcon } from "../../../../../_metronic/helpers";
 import { useNavigate } from "react-router-dom";
+import { Button, Form, Modal } from "react-bootstrap";
 
-const API_URL = import.meta.env.VITE_APP_API_URL;
-
-interface FormValues {
-  data: any;
-  domain: string;
-}
 const ManualAnalysis: FC = () => {
-  const [isLoading, setIsLoading] = useState(false);
-  const [progress, setProgress] = useState(0);
-  const [view, setView] = useState(false);
-  const [file, setFile] = useState<File[]>([]);
   const [showAddBtn, setShowAddBtn] = useState(false);
+  const [show, setShow] = useState(false);
+
+  const handleClose = () => setShow(false);
+  const handleShow = () => setShow(true);
 
   const navigate = useNavigate();
 
-  const getFileExtension = (filename: string): string => {
-    const parts = filename.split(".");
-    if (parts.length > 1) {
-      return parts.pop() as string;
-    }
-    return "";
-  };
-
-  const onDrop = (acceptedFiles: File[]) => {
-    setFile(acceptedFiles);
-  };
-
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
-  const initialValues: any = {
-    data: [
-      {
-        category: "",
-        parameterName: "",
-        parameterDescription: "",
-      },
-    ],
-    domain: "",
-  };
-  const formik = useFormik<FormValues>({
-    initialValues,
-    enableReinitialize: true,
-    onSubmit: async (
-      values: FormValues,
-
-      { setSubmitting }
-    ) => {
-      try {
-      } catch (error) {
-        // Handle error
-      } finally {
-        setSubmitting(false);
-      }
+  const formik: any = useFormik({
+    initialValues: {
+      domain: "",
+      categories: [
+        {
+          categoryName: "",
+          params: [
+            {
+              paramName: "",
+              description: "",
+              score: "",
+            },
+          ],
+        },
+      ],
+    },
+    onSubmit: (values) => {
+      console.log(values);
     },
   });
 
-  const handleAddExperience = () => {
-    formik.setFieldValue("data", [
-      ...formik?.values?.data,
-      {
-        category: "",
-        parameterName: "",
-        parameterDescription: "",
-      },
-    ]);
-  };
-
-  const handleRemoveExperience = (index: number) => {
-    const newExperience = formik?.values?.data?.filter(
-      (_: any, i: any) => i !== index
-    );
-    formik.setFieldValue("data", newExperience);
-  };
-
-  const handleChange = (
-    index: number,
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    const { name, value } = event.target;
-    const newData = formik?.values?.data?.map((exp: any, i: number) => {
-      if (i === index) {
-        return {
-          ...exp,
-          [name]: value,
-        };
-      }
-      return exp;
-    });
-    formik.setFieldValue("data", newData);
-  };
-
   return (
     <>
-      <div className="card-header border-0 ">
-        <KTCard className="d-flex justify-content-center align-items-center pb-5">
-          <div className="w-50">
-            <Grid
-              container
-              rowSpacing={3}
-              columnSpacing={{ xs: 0, sm: 5, md: 4 }}
-              mt={5}
-            >
-              <Grid item xs={12} sm={12} md={8}>
-                <FormControl fullWidth>
-                  <InputLabel id="demo-simple-select-label">Domain </InputLabel>
-                  <Select
-                    labelId="demo-simple-select-label"
-                    id="demo-simple-select"
-                    value={formik.values.domain || "Select Domain"}
-                    size="small"
-                    name="domain"
-                    label="Domain "
-                    onChange={formik.handleChange}
-                  >
-                    <MenuItem value={"Select Domain"} disabled>
-                      Select Domain
-                    </MenuItem>
-                    <MenuItem value={"credit_card"}>Credit Card</MenuItem>
-                    <MenuItem value={"debit_card"}>Debit card</MenuItem>
-                    <MenuItem onClick={() => navigate("addDomain")}>
-                      Add New
-                    </MenuItem>
-                  </Select>
-                </FormControl>
-              </Grid>
-              <Grid item xs={12} sm={6} md={4}>
-                <button
-                  className="btn btn-sm btn-light-primary"
-                  onClick={() => setShowAddBtn(true)}
-                >
-                  <KTIcon iconName="plus" className="fs-3" />
-                  Create New
-                </button>
-              </Grid>
-              {showAddBtn && (
-                <>
-                  {formik?.values?.data?.map((item: any, index: number) => (
-                    <React.Fragment key={index}>
-                      <Grid item xs={12} sm={12} md={3}>
-                        <TextField
-                          id={`category-${index}`}
-                          name="category"
-                          label="Category"
-                          variant="outlined"
-                          value={item?.category}
-                          onChange={(event: any) => handleChange(index, event)}
-                          size="small"
-                          fullWidth
-                        />
-                      </Grid>
-                      <Grid item xs={12} sm={12} md={3}>
-                        <TextField
-                          id={`parameterName-${index}`}
-                          name="parameterName"
-                          label="Parameter Name"
-                          variant="outlined"
-                          value={item?.parameterName}
-                          onChange={(event: any) => handleChange(index, event)}
-                          size="small"
-                          fullWidth
-                        />
-                      </Grid>
-                      <Grid item xs={12} sm={12} md={3}>
-                        <TextField
-                          id={`parameterDescription-${index}`}
-                          name="parameterDescription"
-                          label=" Parameter Description"
-                          variant="outlined"
-                          value={item?.parameterDescription}
-                          onChange={(event: any) => handleChange(index, event)}
-                          size="small"
-                          fullWidth
-                        />
-                      </Grid>
-                      <Grid item xs={0} sm={0} md={1}></Grid>
-                      <Grid
-                        item
-                        xs={12}
-                        sm={12}
-                        md={1}
-                        display={"flex"}
-                        justifyContent={"end"}
-                        alignItems={"center"}
-                      >
-                        {index > 0 && (
-                          <IconButton
-                            onClick={() => handleRemoveExperience(index)}
-                          >
-                            <MdRemoveCircleOutline />
-                          </IconButton>
-                        )}
-                        {index === formik?.values?.data?.length - 1 && (
-                          <IconButton onClick={handleAddExperience}>
-                            <MdAddCircleOutline />
-                          </IconButton>
-                        )}
-                      </Grid>
-                    </React.Fragment>
-                  ))}
-                </>
-              )}
+      <div className="card-header border-0">
+        <KTCard className="p-5">
+          <FormikProvider value={formik}>
+            <Form onSubmit={formik.handleSubmit}>
               <Grid
-                item
-                xs={12}
-                sm={6}
-                md={12}
-                display={"flex"}
-                justifyContent={"end"}
+                container
+                rowSpacing={3}
+                columnSpacing={{ xs: 0, sm: 5, md: 4 }}
+                mt={5}
               >
-                <button
-                  className="btn  btn-light-primary"
-                  onClick={() => {
-                    setShowAddBtn(false);
-                    formik.resetForm();
-                  }}
+                <Grid item xs={12} sm={12} md={8}>
+                  <FormControl fullWidth>
+                    <InputLabel id="demo-simple-select-label">
+                      Domain
+                    </InputLabel>
+                    <Select
+                      labelId="demo-simple-select-label"
+                      id="demo-simple-select"
+                      value={formik.values.domain || "Select Domain"}
+                      disabled={formik.values.domain}
+                      size="small"
+                      name="domain"
+                      label="Domain"
+                      onChange={formik.handleChange}
+                    >
+                      <MenuItem value={"Select Domain"} disabled>
+                        Select Domain
+                      </MenuItem>
+                      <MenuItem value={"credit_card"}>Credit Card</MenuItem>
+                      <MenuItem value={"debit_card"}>Debit Card</MenuItem>
+                      <MenuItem onClick={handleShow}>Add New</MenuItem>
+                    </Select>
+                  </FormControl>
+                </Grid>
+                <Grid item xs={12} sm={6} md={4}>
+                  <button
+                    className="btn btn-sm btn-light-primary"
+                    onClick={() => setShowAddBtn(true)}
+                  >
+                    <KTIcon iconName="plus" className="fs-3" />
+                    Create New
+                  </button>
+                </Grid>
+                {showAddBtn && (
+                  <>
+                    <FieldArray name="categories">
+                      {({ push, remove }) => (
+                        <div className="ps-5">
+                          {formik?.values?.categories?.map(
+                            (category: any, index: number) => (
+                              <div key={index} style={{ marginTop: "30px" }}>
+                                <Grid container>
+                                  <Grid
+                                    item
+                                    xs={2}
+                                    display={"flex"}
+                                    justifyContent={"end"}
+                                  >
+                                    {index > 0 && (
+                                      <IconButton
+                                        onClick={() => remove(index)}
+                                        color="primary"
+                                      >
+                                        <MdRemoveCircleOutline />
+                                      </IconButton>
+                                    )}
+                                    <IconButton
+                                      onClick={() =>
+                                        push({
+                                          categoryName: "",
+                                          params: [
+                                            {
+                                              paramName: "",
+                                              description: "",
+                                              score: "",
+                                            },
+                                          ],
+                                        })
+                                      }
+                                      color="primary"
+                                    >
+                                      <MdAddCircleOutline />
+                                    </IconButton>
+                                  </Grid>
+                                  <Grid item xs={10} md={9}>
+                                    <Field
+                                      name={`categories.${index}.categoryName`}
+                                      as={TextField}
+                                      label="Category Name"
+                                      variant="outlined"
+                                      fullWidth
+                                      size="small"
+                                    />
+                                  </Grid>
+                                </Grid>
+                                <Grid
+                                  container
+                                  spacing={2}
+                                  sx={{ ml: { sm: 5, md: 25 } }}
+                                >
+                                  <FieldArray
+                                    name={`categories.${index}.params`}
+                                  >
+                                    {({ push, remove }) => (
+                                      <div>
+                                        {category?.params.map(
+                                          (param: any, paramIndex: number) => (
+                                            <Grid
+                                              container
+                                              spacing={2}
+                                              key={paramIndex}
+                                              mt={1}
+                                            >
+                                              <Grid item xs={12} md={3}>
+                                                <Field
+                                                  name={`categories.${index}.params.${paramIndex}.paramName`}
+                                                  as={TextField}
+                                                  label="Param Name"
+                                                  variant="outlined"
+                                                  fullWidth
+                                                  size="small"
+                                                />
+                                              </Grid>
+                                              <Grid item xs={12} md={3}>
+                                                <Field
+                                                  name={`categories.${index}.params.${paramIndex}.description`}
+                                                  as={TextField}
+                                                  label="Description"
+                                                  variant="outlined"
+                                                  fullWidth
+                                                  size="small"
+                                                />
+                                              </Grid>
+                                              <Grid item xs={12} md={3}>
+                                                <Field
+                                                  name={`categories.${index}.params.${paramIndex}.score`}
+                                                  as={TextField}
+                                                  label="Score"
+                                                  variant="outlined"
+                                                  fullWidth
+                                                  size="small"
+                                                />
+                                              </Grid>
+                                              <Grid
+                                                item
+                                                xs={12}
+                                                md={3}
+                                                sx={{
+                                                  textAlign: {
+                                                    xs: "right",
+                                                    md: "left",
+                                                  },
+                                                }}
+                                              >
+                                                <IconButton
+                                                  onClick={() =>
+                                                    push({
+                                                      paramName: "",
+                                                      description: "",
+                                                      score: "",
+                                                    })
+                                                  }
+                                                  color="secondary"
+                                                >
+                                                  <MdAddCircleOutline />
+                                                </IconButton>
+                                                {paramIndex > 0 && (
+                                                  <IconButton
+                                                    onClick={() =>
+                                                      remove(paramIndex)
+                                                    }
+                                                    color="secondary"
+                                                  >
+                                                    <MdRemoveCircleOutline />
+                                                  </IconButton>
+                                                )}
+                                              </Grid>
+                                            </Grid>
+                                          )
+                                        )}
+                                      </div>
+                                    )}
+                                  </FieldArray>
+                                </Grid>
+                              </div>
+                            )
+                          )}
+                        </div>
+                      )}
+                    </FieldArray>
+                  </>
+                )}
+                <Grid
+                  item
+                  xs={12}
+                  sm={6}
+                  md={12}
+                  display={"flex"}
+                  justifyContent={"end"}
                 >
-                  Save
-                </button>
+                  <button
+                    className="btn btn-light-primary"
+                    type="submit"
+                    onClick={() => navigate("uploadFile")}
+                  >
+                    Save
+                  </button>
+                </Grid>
               </Grid>
-            </Grid>
-          </div>
+            </Form>
+          </FormikProvider>
         </KTCard>
       </div>
+
+      <Modal show={show} onHide={handleClose}>
+        <Modal.Header closeButton>
+          <Modal.Title>Add Domain</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+            <Form.Label>Domain</Form.Label>
+            <Form.Control type="text" />
+          </Form.Group>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="primary" onClick={handleClose}>
+            Save
+          </Button>
+          <Button variant="secondary" onClick={handleClose}>
+            Close
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </>
   );
 };

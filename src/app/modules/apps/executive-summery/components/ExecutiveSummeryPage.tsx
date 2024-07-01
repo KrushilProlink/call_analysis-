@@ -15,13 +15,18 @@ import {
   setTeamsName,
 } from "../../../../../redux/slice/getApwAnalysisSlice";
 import SpeechAnalysisTable from "./SpeechAnalysisTable";
-import { Autocomplete, Button, TextField } from "@mui/material";
+import { Autocomplete, TextField, Typography } from "@mui/material";
 import { CallWiseReport } from "./CallWiseReport";
 import { McpWiseReport } from "./McpWiseReport";
 import { NonTechWiseReport } from "./NonTechWiseReport";
 import { TechWiseReport } from "./TechWiseReport";
 import html2pdf from "html2pdf.js";
 import DownloadIcon from "@mui/icons-material/Download";
+import FileUploadIcon from "@mui/icons-material/FileUpload";
+import { Button, Form, Modal } from "react-bootstrap";
+import { useDropzone } from "react-dropzone";
+import cloud from "../../../../../_metronic/assets/images/Subtract.png";
+import fileImage from "../../../../../_metronic/assets/images/file.png";
 
 const API_URL = import.meta.env.VITE_APP_API_URL;
 
@@ -38,7 +43,13 @@ const ExecutiveSummeryPage: FC = () => {
   const [loading, setLoading] = useState(false);
   const [isShowPagination, setIsShowPagination] = useState(false);
   const [teamData, setTeamData] = useState<any>([]);
+  const [show, setShow] = useState(false);
+  const [file, setFile] = useState<File[]>([]);
+  const [value, setValue] = useState(0);
+  const [requestedDate, setRequestedDate] = useState("");
 
+  const handleClose = () => setShow(false);
+  const handleShow = () => setShow(true);
   const storedDateRange = useSelector(
     (state: any) => state?.apwAnalysisDetails?.dateRange
   );
@@ -85,7 +96,19 @@ const ExecutiveSummeryPage: FC = () => {
     setIsLoading(false);
   };
 
-  const [value, setValue] = React.useState(0);
+  const onDrop = (acceptedFiles: File[]) => {
+    setFile(acceptedFiles);
+  };
+
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
+
+  const getFileExtension = (filename: string): string => {
+    const parts = filename.split(".");
+    if (parts.length > 1) {
+      return parts.pop() as string;
+    }
+    return "";
+  };
 
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
@@ -169,6 +192,13 @@ const ExecutiveSummeryPage: FC = () => {
     }, 500);
   };
 
+  const handleUploadFile = () => {
+    const payload = {
+      file: file[0],
+      requested_date: requestedDate,
+    };
+  };
+
   useEffect(() => {
     fetchApwAnalysisData();
   }, [dateRange, teamName]);
@@ -239,6 +269,18 @@ const ExecutiveSummeryPage: FC = () => {
                 <button
                   type="button"
                   className="btn btn-light-primary me-3"
+                  onClick={handleShow}
+                >
+                  <span className="indicator-label">
+                    <span>
+                      <FileUploadIcon className="fs-1" />
+                    </span>
+                    <span className="ms-1">Upload</span>
+                  </span>
+                </button>
+                <button
+                  type="button"
+                  className="btn btn-light-primary me-3"
                   onClick={handleDownload}
                 >
                   {!loading && (
@@ -260,6 +302,9 @@ const ExecutiveSummeryPage: FC = () => {
                   )}
                 </button>
               </div>
+            </div>
+            <div className="row" id="reports">
+              <div className="col-xl-12"></div>
             </div>
             <div className="row" id="reports">
               <div className="col-xl-12">
@@ -319,6 +364,148 @@ const ExecutiveSummeryPage: FC = () => {
           </CustomTabPanel>
         </Box>
       </div>
+
+      <Modal show={show} onHide={handleClose}>
+        <Modal.Header closeButton>
+          <Modal.Title>Upload File</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <div>
+            <TextField
+              type="date"
+              fullWidth
+              size="small"
+              onChange={(e) => setRequestedDate(e.target.value)}
+            />
+          </div>
+          <div>
+            {file?.length > 0 ? (
+              <>
+                <div className="dropzoneStyleModel">
+                  <img
+                    src={fileImage}
+                    alt="file"
+                    width={"58px"}
+                    height={"93px"}
+                    style={{ marginBottom: "25px" }}
+                  />
+                  <Typography
+                    style={{
+                      color: "#10253F",
+                      fontSize: "16px",
+                      fontWeight: "600",
+                    }}
+                    className="interFont pt-2"
+                  >
+                    {file && file[0]?.name}
+                  </Typography>
+                  <Typography
+                    style={{
+                      color: "#10253F",
+                      fontSize: "16px",
+                      opacity: "0.5",
+                    }}
+                    className="interFont text-uppercase pt-1"
+                  >
+                    {getFileExtension(file[0]?.name)}
+                  </Typography>
+
+                  <Typography
+                    variant="caption"
+                    onClick={() => setFile([])}
+                    style={{
+                      cursor: "pointer",
+                      color: "#222E93",
+                      fontSize: "14px",
+                      fontWeight: "600",
+                      marginTop: "20px",
+                    }}
+                    className="Manrope"
+                  >
+                    Replace File
+                  </Typography>
+                </div>
+              </>
+            ) : (
+              <>
+                <div {...getRootProps()} className="dropzoneStyleModel">
+                  <img
+                    src={cloud}
+                    alt="cloud"
+                    width={"85px"}
+                    height={"60px"}
+                    style={{ marginBottom: "29px" }}
+                  />
+
+                  <Typography
+                    style={{ fontWeight: "bold", fontSize: "18px" }}
+                    className="Manrope"
+                  >
+                    Upload File
+                  </Typography>
+                  <div className="mt-5 pt-3">
+                    <Typography
+                      style={{
+                        color: "#10253F",
+                        fontSize: "14px",
+                        fontWeight: "600",
+                      }}
+                      className="interFont"
+                    >
+                      Drag and Drop
+                    </Typography>
+                    <Typography
+                      style={{
+                        color: "#10253F",
+                        fontSize: "14px",
+                        opacity: "50%",
+                        margin: "10px 0",
+                      }}
+                      className="interFont"
+                    >
+                      - or -
+                    </Typography>
+                    <Button
+                      variant="contained"
+                      className="btn btn-sm btn-light-primary fs-6 text-capitalize"
+                    >
+                      Select File
+                    </Button>
+                  </div>
+                </div>
+              </>
+            )}
+          </div>
+        </Modal.Body>
+        <Modal.Footer>
+          <div className="d-flex justify-content-between align-items-center w-100">
+            <Typography
+              className="text-primary text-decoration-underline"
+              style={{ cursor: "pointer" }}
+            >
+              Download Template
+            </Typography>
+            <div>
+              <Button
+                variant="primary"
+                onClick={() => {
+                  handleClose();
+                  handleUploadFile();
+                }}
+              >
+                Save
+              </Button>
+              <Button
+                variant="secondary"
+                onClick={handleClose}
+                className="ms-3"
+              >
+                Close
+              </Button>
+            </div>
+          </div>
+        </Modal.Footer>
+      </Modal>
     </>
   );
 };
