@@ -276,7 +276,7 @@ const ManualAnalysis: FC = () => {
             Save
           </Button>
           <Button variant="secondary" onClick={handleClose}>
-            Close
+            Cancel
           </Button>
         </Modal.Footer>
       </Modal>

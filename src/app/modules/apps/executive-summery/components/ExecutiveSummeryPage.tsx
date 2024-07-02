@@ -15,7 +15,7 @@ import {
   setTeamsName,
 } from "../../../../../redux/slice/getApwAnalysisSlice";
 import SpeechAnalysisTable from "./SpeechAnalysisTable";
-import { Autocomplete, TextField, Typography } from "@mui/material";
+import { Autocomplete, TextField, Typography, InputLabel } from "@mui/material";
 import { CallWiseReport } from "./CallWiseReport";
 import { McpWiseReport } from "./McpWiseReport";
 import { NonTechWiseReport } from "./NonTechWiseReport";
@@ -43,8 +43,8 @@ const ExecutiveSummeryPage: FC = () => {
   const [apwAnalysisData, setApwAnalysisData]: any = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [loadingBtn, setLoadingBtn] = useState(false);
   const [isShowPagination, setIsShowPagination] = useState(false);
+  const [loadingBtn, setLoadingBtn] = useState(false);
   const [teamData, setTeamData] = useState<any>([]);
   const [show, setShow] = useState(false);
   const [file, setFile] = useState<File[]>([]);
@@ -201,12 +201,13 @@ const ExecutiveSummeryPage: FC = () => {
 
   const handleUploadFile = async (event: any) => {
     event.preventDefault();
-    if (file?.length === 0) {
-      alert("Please select a file first!");
+    if (requestedDate === "") {
+      alert("Please select the call recording date");
       return;
     }
-    if (requestedDate === "") {
-      alert("Please select Date");
+
+    if (file?.length === 0) {
+      alert("Please select a file");
       return;
     }
 
@@ -229,7 +230,7 @@ const ExecutiveSummeryPage: FC = () => {
         setLoadingBtn(false);
         Swal.fire({
           title: "Success",
-          text: "File Upload successfully.",
+          text: "File Upload successfully",
           icon: "success",
         });
       }
@@ -256,6 +257,16 @@ const ExecutiveSummeryPage: FC = () => {
       setDateRangeState(storedDateRange);
     }
   }, [storedDateRange]);
+
+  const handleDownloadSample = () => {
+    const url =
+      "https://84jwqs4jfk.execute-api.ap-south-1.amazonaws.com/dev/analysis-template";
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "analysis-template";
+    link.click();
+  };
+
   return (
     <>
       <div className="card-header border-0">
@@ -319,7 +330,7 @@ const ExecutiveSummeryPage: FC = () => {
                     <span>
                       <FileUploadIcon className="fs-1" />
                     </span>
-                    <span className="ms-1">Upload</span>
+                    <span className="ms-1">Analyse calls using Excel</span>
                   </span>
                 </button>
                 <button
@@ -411,9 +422,27 @@ const ExecutiveSummeryPage: FC = () => {
 
       <Modal show={show} onHide={handleClose}>
         <Modal.Header closeButton>
-          <Modal.Title>Upload File</Modal.Title>
+          <Modal.Title>Analyse calls using Excel</Modal.Title>
         </Modal.Header>
         <Modal.Body>
+          <InputLabel
+            id="demo-simple-select-label"
+            style={{
+              minWidth: "200px",
+              display: "inline-flex",
+            }}
+          >
+            Recording date{" "}
+            <p
+              style={{
+                color: "grey",
+                fontSize: "10px",
+                marginTop: "1px",
+              }}
+            >
+              &nbsp;&nbsp;(Please select the call recording date)
+            </p>
+          </InputLabel>
           <div>
             <TextField
               type="date"
@@ -485,7 +514,7 @@ const ExecutiveSummeryPage: FC = () => {
                     style={{ fontWeight: "bold", fontSize: "18px" }}
                     className="Manrope"
                   >
-                    Upload File
+                    Analyse calls using Excel
                   </Typography>
                   <div className="mt-5 pt-3">
                     <Typography
@@ -526,8 +555,9 @@ const ExecutiveSummeryPage: FC = () => {
             <Typography
               className="text-primary text-decoration-underline"
               style={{ cursor: "pointer" }}
+              onClick={handleDownloadSample}
             >
-              Download Template
+              Download Excel Template
             </Typography>
             <div>
               <Button
@@ -539,7 +569,7 @@ const ExecutiveSummeryPage: FC = () => {
               >
                 {!loadingBtn && (
                   <span className="indicator-label">
-                    <span className="ms-1">Save </span>
+                    <span className="ms-1">Submit</span>
                   </span>
                 )}
                 {loadingBtn && (
@@ -557,7 +587,7 @@ const ExecutiveSummeryPage: FC = () => {
                 onClick={handleClose}
                 className="ms-3"
               >
-                Close
+                Cancel
               </Button>
             </div>
           </div>
