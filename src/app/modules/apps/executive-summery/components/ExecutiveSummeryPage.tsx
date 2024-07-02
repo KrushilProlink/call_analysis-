@@ -27,6 +27,8 @@ import { Button, Form, Modal } from "react-bootstrap";
 import { useDropzone } from "react-dropzone";
 import cloud from "../../../../../_metronic/assets/images/Subtract.png";
 import fileImage from "../../../../../_metronic/assets/images/file.png";
+import Swal from "sweetalert2";
+import "@sweetalert2/theme-dark";
 
 const API_URL = import.meta.env.VITE_APP_API_URL;
 
@@ -41,6 +43,7 @@ const ExecutiveSummeryPage: FC = () => {
   const [apwAnalysisData, setApwAnalysisData]: any = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [loadingBtn, setLoadingBtn] = useState(false);
   const [isShowPagination, setIsShowPagination] = useState(false);
   const [teamData, setTeamData] = useState<any>([]);
   const [show, setShow] = useState(false);
@@ -212,7 +215,7 @@ const ExecutiveSummeryPage: FC = () => {
     const formData = new FormData();
     formData.append("file", file[0]);
     formData.append("requested_date", formatedDate);
-
+    setLoadingBtn(true);
     try {
       const response = await axios.post(`${API_URL}/excel-analysis`, formData, {
         headers: {
@@ -223,10 +226,20 @@ const ExecutiveSummeryPage: FC = () => {
         setFile([]);
         setRequestedDate("");
         handleClose();
+        setLoadingBtn(false);
+        Swal.fire({
+          title: "Success",
+          text: "File Upload successfully.",
+          icon: "success",
+        });
       }
-      console.log("File uploaded successfully:", response.data);
     } catch (error) {
-      console.error("Error uploading file:", error);
+      Swal.fire({
+        title: "Error",
+        text: "Internal Server Error",
+        icon: "error",
+      });
+      setLoadingBtn(false);
     }
   };
 
@@ -522,8 +535,22 @@ const ExecutiveSummeryPage: FC = () => {
                 onClick={(e) => {
                   handleUploadFile(e);
                 }}
+                disabled={loadingBtn}
               >
-                Save
+                {!loadingBtn && (
+                  <span className="indicator-label">
+                    <span className="ms-1">Save </span>
+                  </span>
+                )}
+                {loadingBtn && (
+                  <span
+                    className="indicator-progress"
+                    style={{ display: "block" }}
+                  >
+                    Please wait...
+                    <span className="spinner-border spinner-border-sm align-middle ms-2"></span>
+                  </span>
+                )}
               </Button>
               <Button
                 variant="secondary"
