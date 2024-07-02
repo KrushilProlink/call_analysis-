@@ -12,6 +12,10 @@
 // Layout
 @import "layout/layout";
 
+@import "bootstrap/scss/functions";
+@import "bootstrap/scss/variables";
+@import "bootstrap/scss/utilities";
+
 .custom-date-range-picker .rs-input-group-addon {
     display: none;
 }
@@ -42,10 +46,25 @@
     justify-content: center;
     align-items: center;
     flex-direction: column;
-    height: 35vh;
+    height: 25vh;
     text-align: center;
-    margin-top: 8px;
+    margin-top: 5px;
     margin: 22px 5px 5px 5px;
+}
+.dropzoneStyleModelAudio {
+    background-color: #ffffff0d;
+    background-image: url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' rx='10' ry='10' stroke='%238E98A3FF' stroke-width='2' stroke-dasharray='6%2c 14' stroke-dashoffset='0' stroke-linecap='square'/%3e%3c/svg%3e");
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: rgb(0 0 0 / 12%) 0px 0px 32px -13px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    height: 20vh;
+    text-align: center;
+    margin-top: 5px;
+    margin: 0px 5px 5px 5px;
 }
 
 .Considerable {
